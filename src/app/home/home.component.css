@@ -1,0 +1,59 @@
+
+.nav-btn {
+  background-color: #002a5c;
+  color: white;
+  font-weight: bold;
+  border-radius: 0;
+  padding: 8px 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.active-nav {
+  background-color: #8BC34A !important;
+  color: white !important;
+}
+
+.badge {
+  background-color: #8BC34A;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  margin-left: 4px;
+}
+.nav-btn {
+  margin-right: 10px; /* Adjust the value as needed */
+}
+
+.nav-btn:last-child {
+  margin-right: 0; /* Remove margin from the last button */
+}
+.nav-underline {
+  height: 6px; /* Adjust thickness */
+  background-color: #8BC34A; /* Green color similar to the screenshot */
+  border-radius: 0 0 4px 4px; /* Optional: rounded bottom corners */
+  margin-top: 0px; /* Space between buttons and line */
+}
+
+
+
+
+/* Button styling */
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.button-group button {
+  background-color: #002366;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+
+

@@ -1,0 +1,71 @@
+
+<div class="button-group">
+  <button kendoButton (click)="toggleTheme()">
+    <i [class]="themeIcon"></i> {{ themeText }}
+  </button>
+
+  <button kendoButton>
+    <i class="fas fa-envelope"></i>
+  </button>
+
+  <button kendoButton>
+    <i class="fas fa-cog"></i>
+  </button>
+
+  <button kendoButton>
+    <i class="fas fa-bell"></i>
+  </button>
+
+  <button kendoButton>
+    <i class="fas fa-user"></i> Admin
+  </button>
+</div>
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row mt-3">
+  <div class="col-sm-12 example-col">
+    <kendo-buttongroup>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-tachometer-alt"></i> DASHBOARD
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-user-tie"></i> AGENT MANAGEMENT <i class="fas fa-caret-down ms-1"></i>
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-calendar-alt"></i> CALENDAR
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-calculator"></i> EZ QUOTE
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn active-nav">
+        <i class="fas fa-project-diagram"></i> LEAD MANAGEMENT
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-tasks"></i> ACTIVITIES
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-cogs"></i> WORKFLOWS
+      </button>
+      <button kendoButton [toggleable]="true" class="nav-btn">
+        <i class="fas fa-comments"></i> CHAT <span class="badge">1</span>
+      </button>
+    </kendo-buttongroup>
+    <div class="nav-underline"></div>
+  </div>
+</div>
+<app-leadheader></app-leadheader>
+
+

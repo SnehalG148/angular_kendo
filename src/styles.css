@@ -1,1 +1,385 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Default (Light Mode) */
+body {
+    background-color: white;
+    color: black;
+    transition: background 0.3s, color 0.3s; /* Smooth transition */
+  }
+  
+  /* Dark Mode */
+  body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  
+  /* Change button styles in dark mode */
+  body.dark-mode .k-button {
+    background-color: #333;
+    color: white;
+  }
+
+
+
+
+
+
+
+  /* Dark Mode Global Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  /* Dark mode overrides for Kendo components */
+  body.dark-mode {
+    --kendo-theme-bg-surface: #1e1e1e;
+    --kendo-theme-text-default: #ffffff;
+    --kendo-theme-border-default: #444;
+    
+    .k-grid {
+      background-color: #1e1e1e;
+    }
+  
+    .k-grid-header {
+      background-color: #00205b !important;
+    }
+  
+    .k-grid-content {
+      background-color: #1e1e1e;
+    }
+  
+    .k-grid tr.k-alt {
+      background-color: #2d2d2d;
+    }
+  
+    .k-grid-toolbar {
+      background-color: #2d2d2d;
+    }
+  
+    .k-button {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+  
+    .k-input {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+  }
+
+
+
+
+
+
+
+
+
+  
+/* Dark mode styles for dropdowns and buttons */
+body.dark-mode {
+    /* ...existing dark mode styles... */
+  
+    /* Dropdown styling */
+    .k-dropdown,
+    .k-dropdownlist {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      color: #ffffff;
+    }
+  
+    .k-dropdown .k-dropdown-wrap,
+    .k-dropdownlist .k-dropdown-wrap {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+  
+    .k-dropdown-button {
+      background-color: #1e1e1e !important;
+      border-color: #faf8f8 !important;
+      color: #ffffff !important;
+    }
+  
+    /* Dropdown arrow/icon */
+    .k-select {
+      background-color: #1e1e1e;
+      border-left-color: #333;
+  
+      .k-icon {
+        color: #ffffff;
+      }
+    }
+  
+    /* Dropdown list popup */
+    .k-list-container {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+  
+    .k-list .k-item {
+      color: #ffffff;
+      background-color: #1e1e1e;
+  
+      &:hover, &.k-selected {
+        background-color: #2d2d2d;
+      }
+    }
+  
+    /* Hover and focus states */
+    .k-dropdown:hover,
+    .k-dropdownlist:hover,
+    .k-dropdown.k-state-focused,
+    .k-dropdownlist.k-state-focused {
+      border-color: #444;
+      background-color: #2d2d2d;
+    }
+  
+    /* Placeholder text color */
+    .k-input-value-text {
+      color: #999;
+    }
+  }
+
+
+  /* Dark mode styles for toggle buttons */
+body.dark-mode {
+    /* ...existing dark mode styles... */
+  
+    .k-button-group {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      
+      .k-button {
+        background-color: #1e1e1e;
+        color: #ffffff;
+        border: none;
+        padding: 8px 16px;
+        
+        &:hover {
+          background-color: #2d2d2d;
+        }
+        
+        &.active-btn,
+        &.k-selected {
+          background-color: #8bc34a;
+          border: 1px solid #444;
+          color: #ffffff;
+        }
+      }
+    }
+  
+    /* Toggle button specific styles */
+    .toggle-btn {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      border: 1px solid #333;
+      transition: all 0.3s ease;
+  
+      &:hover {
+        background-color: #2d2d2d;
+        border-color: #444;
+      }
+  
+      &.active-btn {
+        background-color: #2d2d2d;
+        border-color: #444;
+        color: #ffffff;
+      }
+    }
+  }
+
+
+  /* Dark mode header button styles */
+body.dark-mode {
+    /* ...existing dark mode styles... */
+  
+    .button-group {
+      background-color: #1e1e1e;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+  
+      .k-button {
+        background-color: #1e1e1e !important;
+        color: #ffffff !important;
+        border: 1px solid #333 !important;
+        padding: 8px 16px;
+        
+        &:hover {
+          background-color: #8bc34a !important;
+          border-color: #8bc34a !important;
+        }
+  
+        /* Style for active/selected state */
+        &.k-selected {
+          background-color: #8bc34a !important;
+          border-color: #8bc34a !important;
+          color: #ffffff !important;
+        }
+  
+        /* Icon styling */
+        i {
+          margin-right: 4px;
+        }
+      }
+  
+      /* Admin button specific style */
+      .k-button:last-child {
+        background-color: #8bc34a !important;
+        border-color: #8bc34a !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+
+
+  /* Dark mode styles for grid toolbar buttons */
+body.dark-mode {
+    .k-grid-toolbar {
+      background-color: #1e1e1e;
+      border-color: #333;
+      padding: 8px;
+  
+      .k-button {
+        background-color: #2d2d2d;
+        color: #ffffff;
+        border: 1px solid #444;
+        margin-right: 8px;
+        padding: 6px 16px;
+        transition: all 0.3s ease;
+  
+        &:hover:not([disabled]) {
+          background-color: #3d3d3d;
+          border-color: #555;
+        }
+  
+        &[disabled] {
+          background-color: #1e1e1e;
+          color: #666;
+          border-color: #333;
+          opacity: 0.6;
+        }
+  
+        /* Primary theme color button (Cancel button) */
+        &[themecolor="primary"] {
+          background-color: #8bc34a;
+          border-color: #8bc34a;
+          color: #ffffff;
+  
+          &:hover {
+            background-color: #7cb342;
+            border-color: #7cb342;
+          }
+        }
+      }
+    }
+  }
+
+
+  /* Kendo Grid Dark Theme */
+body.dark-mode .k-grid {
+  /* Grid Header Styles */
+  .k-grid-header {
+    background-color: #8bc34a !important;
+  }
+
+  .k-grid-header th.k-header {
+    background-color: #8bc34a !important;
+    color: #ffffff !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Grid Content Styles */
+  .k-grid-content {
+    background-color: #1e1e1e !important;
+  }
+
+  tr {
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #333333 !important;
+
+    &:hover {
+      background-color: #2d2d2d !important;
+    }
+  }
+
+  td {
+    color: #ffffff !important;
+    border-color: #333333 !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Alternate Row Color */
+  tr.k-alt {
+    background-color: #262626 !important;
+  }
+
+  /* Checkbox Column */
+  .k-checkbox {
+    background-color: transparent !important;
+    border-color: #ffffff !important;
+  }
+
+  /* Action Button Style */
+  .k-button.custom-action-btn {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #556B2F !important;
+    
+    &:hover {
+      background-color: #556B2F !important;
+    }
+  }
+}
+
+
+/* Action Button Dark Theme */
+body.dark-mode {
+  .k-grid {
+    /* Custom action button styles */
+    .custom-action-btn {
+      background-color: #333333 !important;
+      color: #ffffff !important;
+      border: none !important;  /* Removed the green border */
+      padding: 6px 12px !important;
+      border-radius: 4px !important;
+      box-shadow: none !important;  /* Added to ensure no shadow */
+      
+      &:hover {
+        background-color: #1e1e1e !important;
+      }
+
+      /* Icon styles */
+      .fas {
+        margin: 0 4px !important;
+        color: #ffffff !important;
+      }
+
+      /* Dropdown arrow icon */
+      .fa-angle-down {
+        margin-left: 8px !important;
+      }
+    }
+
+    /* Dropdown menu styles */
+    .k-popup {
+      background-color: #1e1e1e !important;
+      border: 1px solid #333333 !important;
+
+      .k-list-item {
+        color: #ffffff !important;
+        padding: 8px 12px !important;
+
+        &:hover {
+          background-color: #2d2d2d !important;  /* Changed hover color */
+        }
+        }
+      }
+    }
+  }

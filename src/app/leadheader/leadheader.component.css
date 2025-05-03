@@ -1,0 +1,440 @@
+.lead-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+  }
+  
+  .lead-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .title {
+    color: #8BC34A;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0;
+  }
+  
+  .subtitle {
+    color: #75af77;
+    font-size: 20px;
+    margin-left: 20px;
+  }
+  
+  .lead-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .board-view {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .btn-rounded.k-button {
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+  /* For the Export to Excel button */
+.export-btn {
+  background-color: #8bc34a; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  font-size: 14px; /* Font size */
+  border-radius: 5px; /* Slightly rounded corners */
+  padding: 8px 16px; /* Padding for a balanced look */
+  display: flex; /* Flexbox for aligning icon and text */
+  align-items: center; /* Center align icon and text */
+  gap: 8px; /* Space between icon and text */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.export-btn:hover {
+  background-color: #517c20; /* Darker green on hover */
+}
+
+/* For the Create button */
+.create-btn {
+  background-color: #8bc34a; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  font-size: 14px; /* Font size */
+  border-radius: 5px; /* Slightly rounded corners */
+  padding: 8px 16px; /* Padding for a balanced look */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.create-btn:hover {
+  background-color: #517c20; /* Darker green on hover */
+}
+  /* Add a rounded button style */
+  .btn-rounded {
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .lead-header {
+      flex-direction: column; /* Stack the title and actions vertically */
+      align-items: flex-start; /* Align items to the start */
+    }
+  
+    .lead-title {
+      margin-bottom: 10px;
+    }
+  
+    .lead-actions {
+      justify-content: flex-start; /* Align actions to the start */
+      width: 100%; /* Ensure actions span the full width */
+      gap: 10px; /* Reduce gap between actions */
+    }
+  
+    .board-view {
+      font-size: 12px; /* Adjust font size on smaller screens */
+    }
+  
+    .export-btn, .create-btn {
+      font-size: 12px; /* Adjust button font size */
+      padding: 6px 12px; /* Adjust button padding */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .title {
+      font-size: 24px; /* Smaller font size on very small screens */
+    }
+  
+    .subtitle {
+      font-size: 16px; /* Adjust subtitle size */
+    }
+  
+    .export-btn, .create-btn {
+      font-size: 12px; /* Further reduce font size */
+      padding: 6px 10px; /* Further reduce padding */
+    }
+
+      kendo-dropdownlist {
+        width: 170px;
+      }
+  }
+  
+
+/* toolbar */
+  .green-border {
+    border: 2px solid green;
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    padding: 5px; /* Optional: Adds spacing inside the border */
+  }
+
+  kendo-dropdownlist {
+    width: 250px;
+    height:40px;
+  }
+  .k-form-row.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+  }
+  
+  .k-form-field-wrap {
+    min-width: 160px;
+  }
+  
+  .search-box {
+    width: 250px;                  
+  }
+  
+  .search-btn {
+    background-color: #8bc34a;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  
+ 
+  .search-btn i {
+    height:20px;
+    color: white;
+    font-size: 20px;
+  }
+  
+  kendo-buttongroup {
+    background-color: #002f6c; /* navy blue */
+    border-radius: 30px;
+    padding: 4px;
+  }
+  
+  .toggle-btn {
+    border: none;
+    border-radius: 30px;
+    padding: 6px 20px;
+    font-weight: bold;
+    background-color: transparent;
+    color: white;
+  }
+  
+  .active-btn {
+    background-color: #76a841; /* green */
+    color: white;
+  }
+  .icon-button {
+    border: 2px solid #c5e1a5; /* Light green border */
+    border-radius: 10px;       /* Rounded corners */
+    background-color: white;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .icon-button i {
+    font-size: 16px;
+    color: #8bc34a; /* Match the green hue */
+  }
+  .right-side-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+  ::ng-deep .k-grid .k-grid-header .k-header .k-grid-column-menu .k-icon {
+    color: white !important;
+  }
+  kendo-dropdownlist {
+    width: 200px;
+  }
+
+  /* action dropdown css */
+  .custom-action-btn {
+    background-color:  #34b233  !important; /* Match green color */
+    border-color:  #34b233  !important;
+    color: white !important;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 4px;
+  }
+  
+  .custom-action-btn .k-icon {
+    margin-right: 5px;
+  }
+  
+
+/* edit and delete css */
+  /* Base Button Styling */
+.btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  display: inline-block; /* Makes the buttons inline */
+  margin-right: 10px; /* Adds space between buttons */
+}
+
+/* Edit Button Styling */
+.edit-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.edit-btn:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+/* Remove Button Styling */
+.remove-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.remove-btn:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+/* Space between buttons */
+.btn + .btn {
+  margin-left: 10px;
+}
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+/* Dark mode styles */
+:host-context(.dark-mode) {
+  /* Header styles */
+  .lead-header {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+
+  .lead-title {
+    .title {
+      color:#8BC34A;;
+    }
+    .subtitle {
+      color:#8BC34A;
+    }
+  }
+
+  /* Button styles */
+  .board-view {
+    color: #ffffff;
+  }
+
+  .btn {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #444;
+
+    &:hover {
+      background-color: #3d3d3d;
+    }
+  }
+
+  .export-btn {
+    background-color:#8bc34a;
+    color: #f8faf8;
+  }
+
+  .create-btn {
+    background-color: #8bc34a;
+    &:hover {
+      background-color: #3d3d3d;
+    }
+  }
+
+  /* Filter bar styles */
+  .green-border {
+    background-color: #1e1e1e;
+    border: 2px solid rgb(59, 161, 59);
+  }
+
+  .k-form-row {
+    background-color: #1e1e1e;
+  }
+
+  .search-box {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-color: #444;
+  }
+
+  .search-btn {
+    background-color:  #8bc34a;
+    color: #ffffff;
+    border-color: #444;
+  }
+
+  /* Grid styles */
+  ::ng-deep {
+    kendo-grid {
+      background-color: #1e1e1e;
+      color: #ffffff;
+
+      .k-grid-header {
+        background-color: #2d2d2d;
+      }
+
+      .k-grid-content {
+        background-color: #1e1e1e;
+      }
+
+      .k-grid tr {
+        background-color: #1e1e1e;
+        
+        &:hover {
+          background-color: #2d2d2d;
+        }
+      }
+
+      .k-grid td {
+        border-color: #333;
+        color: #ffffff;
+      }
+
+      .k-grid-toolbar {
+        background-color: #2d2d2d;
+        border-color: #444;
+      }
+
+      .k-button {
+        background-color: #2d2d2d;
+        color: #ffffff;
+        border-color: #444;
+
+        &:hover {
+          background-color: #3d3d3d;
+        }
+      }
+
+      .k-dropdown-button {
+        background-color: #2d2d2d;
+        color: #ffffff;
+      }
+
+      .k-grid-pager {
+        background-color: #2d2d2d;
+        color: #ffffff;
+      }
+
+      .k-dropdown, .k-dropdownlist {
+        background-color: #2d2d2d;
+        color: #ffffff;
+        border-color: #444;
+      }
+    }
+
+    /* Custom action button */
+    .custom-action-btn {
+      background-color: #2d2d2d;
+      color: #7bdb7f;
+      border-color: #444;
+    }
+  }
+}
+
+/* .lead-stage-dropdown .k-dropdown-wrap {
+  background-color: #7bdb7f !important;
+  color: #fff !important;
+}
+.lead-stage-dropdown .k-state-focused {
+  background-color: #7bdb7f !important;
+} */
+.selected-green {
+  background-color: #8bc34a !important; /* green background */
+  color: white;
+  font-weight: bold;
+}
