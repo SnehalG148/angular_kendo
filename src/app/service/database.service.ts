@@ -13,9 +13,9 @@ export interface LeadData {
   lmp_lead_id: number;
   appointment_type: string;
   booking_agency: number;
-  lead_stage: string; // <-- Added this line
-  created_source: string; // <-- Add this line
-  assign_date:string;
+  lead_stage: string;
+  created_source: string;
+  assign_date: string;
 }
 
 @Injectable({

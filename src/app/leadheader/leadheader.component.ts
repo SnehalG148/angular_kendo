@@ -6,15 +6,17 @@ import { KENDO_DROPDOWNLIST } from '@progress/kendo-angular-dropdowns';
 import { FormGroup, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { process } from '@progress/kendo-data-query';
+import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
+import { NgbDropdownModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { InputsModule } from '@progress/kendo-angular-inputs';
-import { Data } from '@angular/router';
+// import { Data } from '@angular/router';
 import { DatabaseService } from '../service/database.service';
-import { log } from 'console';
+// import { log } from 'console';
 
 import { StatePersistingService } from '../service/state-persisting.service';
 import { GridSettings } from '../service/grid-settings.interface'; // Update the path to the correct location
-import { ColumnSettings } from '../service/column-settings.interface';
+// import { ColumnSettings } from '../service/column-settings.interface';
 
 import { State } from '@progress/kendo-data-query';
 
@@ -29,16 +31,25 @@ import { State } from '@progress/kendo-data-query';
     KENDO_DROPDOWNLIST,
     InputsModule,
     ExcelModule,
+    DateInputsModule,
+    NgbDropdownModule,
+    NgbModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './leadheader.component.html',
   styleUrls: ['./leadheader.component.css'],
 })
 export class LeadheaderComponent implements OnInit {
+  // ViewChild decorators
   @ViewChild(DataBindingDirective) dataBinding: DataBindingDirective | undefined;
   @ViewChild('gridref', { static: true }) grid!: GridComponent;
   @ViewChild('searchInput') searchInput!: ElementRef;
+  @ViewChild('preferences') preferences!: any;
 
+  // Constants
+  private readonly DATE_FORMAT = 'yyyy-MM-dd';
+
+  // Grid related properties
   public gridSettings: GridSettings = {
     state: {
       skip: 0,
@@ -55,20 +66,45 @@ export class LeadheaderComponent implements OnInit {
     columnsConfig: [],
     columnOrder: []
   };
-
   public gridData: any[] = [];
   public gridView: any[] = [];
   public mySelection: string[] = [];
-  public formGroup: FormGroup | null = null;
-
   public editModel: any = {};
-  private originalData: any[] | undefined;
 
+  // Form related properties
+  public formGroup: FormGroup | null = null;
   isNew: boolean = false;
   editedRowIndex: number | undefined;
 
+  // Preference related properties
   public defaultPreference = { id: '0', name: 'Select Saved Preferences' };
   public savedPreferences: Array<{ id: string, name: string }> = [];
+
+  // List items and data
+  public listItems: Array<string> = ["Item 1", "Item 2", "Item 3"];
+  isNonIntl = true;
+
+  // Cache and performance related properties
+  private originalData: any[] | undefined;
+  private debounceTimer: any;
+  private memoizedData: { [key: string]: any[] } = {};
+
+  // Action items data
+  data = [
+    { text: "View Lead" },
+    { text: "Edit Lead" },
+    { text: "Assign to Sales Rep" },
+    { text: "Schedule Appointment" },
+    { text: "Possible Matches" },
+    { text: "Tie and Untie Qualified Leads" },
+    { text: "Audit Trail" },
+    { text: "Estimates" },
+    { text: "Lead Documents" },
+    { text: "Register With STS" },
+    { text: "Survey List" },
+    { text: "Duplicate Lead" },
+    { text: "Chat" },
+  ];
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -85,80 +121,17 @@ export class LeadheaderComponent implements OnInit {
     this.loadSavedPreferences();
   }
 
-  private loadSavedPreferences(): void {
-    const preferences = this.statePersistingService.get('savedPreferences') || [];
-    this.savedPreferences = preferences;
-  }
-
-  public onPreferenceChange(preference: any): void {
-    if (!preference) return;
-
-    if (preference.id === 'new') {
-      const name = prompt('Enter a name for your preference:');
-      if (name) {
-        this.saveNewPreference(name);
-      }
-    } else {
-      const savedPreference = this.statePersistingService.get(`gridSettings_${preference.id}`);
-      if (savedPreference) {
-        this.gridSettings = this.mapGridSettings(savedPreference);
-        this.applyGridSettings();
-      }
-    }
-  }
-
-  public saveNewPreference(name?: string): void {
-    if (!this.grid) return;
-
-    const newId = Date.now().toString();
-    const gridConfig = {
-      state: {
-        skip: this.grid.skip || 0,
-        take: this.grid.pageSize || 20,
-        sort: this.grid.sort || [],
-        filter: this.grid.filter || {
-          logic: 'and',
-          filters: []
-        },
-        group: this.grid.group || []
-      },
-      gridData: this.gridData,
-      columnsConfig: this.grid.columns.toArray().map((col: any) => ({
-        field: col.field,
-        title: col.title,
-        width: col.width,
-        filter: col.filter,
-        format: col.format,
-        filterable: col.filterable,
-        hidden: col.hidden
-      }))
-    };
-
-    // If name is not provided, prompt the user
-    if (!name) {
-      const promptResult = prompt('Enter a name for your preference:');
-      if (!promptResult) return; // User cancelled
-      name = promptResult;
-    }
-
-    // Save the new preference configuration
-    this.statePersistingService.set(`gridSettings_${newId}`, gridConfig);
-
-    // Update preferences list
-    const currentPreferences = this.savedPreferences.filter(p => p.id !== 'new');
-    const updatedPreferences = [...currentPreferences, { id: newId, name }];
-    this.statePersistingService.set('savedPreferences', updatedPreferences);
-
-    // Reload preferences
-    this.loadSavedPreferences();
-  }
-
   private loadEmployees(): void {
     this.databaseService.getLeads()
       .subscribe({
         next: (data) => {
-          this.gridData = data;
-          this.gridView = this.gridData;
+          // Ensure assign_date is always a valid Date object or null
+          this.gridData = data.map(item => ({
+            ...item,
+            assign_date: item.assign_date ? new Date(item.assign_date.split('T')[0]) : null
+          }));
+          this.gridView = [...this.gridData];
+          this.originalData = [...this.gridData];
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -188,52 +161,66 @@ export class LeadheaderComponent implements OnInit {
     this.gridView = filteredData || [];
   }
 
-  // public onFilter(value: Event): void {
-  //   const inputValue = (value.target as HTMLInputElement).value;
-  //   this.gridView = process(this.gridData, {
-  //     filter: {
-  //       logic: "or",
-  //       filters: [
-  //         { field: "full_name", operator: "contains", value: inputValue },
-  //         { field: "job_title", operator: "contains", value: inputValue },
-  //         { field: "budget", operator: "contains", value: inputValue },
-  //         { field: "phone", operator: "contains", value: inputValue },
-  //         { field: "address", operator: "contains", value: inputValue },
-  //       ],
-  //     },
-  //   }).data;
+  public clearFilter(): void {
+    if (!this.grid) return;
 
-  //   if (this.dataBinding) {
-  //     this.dataBinding.skip = 0;
-  //   }
-  // }
+    // Reset grid to default state without removing saved preferences
+    this.gridSettings = {
+      state: {
+        skip: 0,
+        take: 20,
+        sort: [],
+        filter: {
+          logic: 'and',
+          filters: []
+        },
+        group: []
+      },
+      gridData: this.gridData,
+      gridView: [],
+      columnsConfig: [],
+      columnOrder: []
+    };
+
+    // Clear columns ordering and settings
+    const defaultColumns = this.grid.columns.toArray();
+    defaultColumns.forEach((col, index) => {
+      if (col) {
+        col.orderIndex = index;
+        col.hidden = false;
+      }
+    });
+
+    // Reset the grid view to original data
+    this.gridView = [...this.gridData];
+
+    // Clear the search input if it exists
+    const searchInput = document.querySelector('.search-box') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.value = '';
+    }
+
+    // Reset preferences dropdown to default without clearing saved preferences
+    const preferencesDropdown = document.querySelector('kendo-dropdownlist[ng-reflect-text-field="name"]') as any;
+    if (preferencesDropdown) {
+      preferencesDropdown.value = this.defaultPreference;
+    }
+
+    // Clear any stored current grid settings
+    this.statePersistingService.set('gridSettings', null);
+
+    // Apply default settings
+    this.applyGridSettings();
+    this.cdr.detectChanges();
+  }
 
   public exportToExcel(grid: GridComponent): void {
     grid.saveAsExcel();
   }
 
-  public listItems: Array<string> = ["Item 1", "Item 2", "Item 3"];
-
-  isNonIntl = true;
   onToggle(type: 'non' | 'intl') {
     this.isNonIntl = type === 'non';
   }
-
-  data = [
-    { text: "View Lead" },
-    { text: "Edit Lead" },
-    { text: "Assign to Sales Rep" },
-    { text: "Schedule Appointment" },
-    { text: "Possible Matches" },
-    { text: "Tie and Untie Qualified Leads" },
-    { text: "Audit Trail" },
-    { text: "Estimates" },
-    { text: "Lead Documents" },
-    { text: "Register With STS" },
-    { text: "Survey List" },
-    { text: "Duplicate Lead" },
-    { text: "Chat" },
-  ];
 
   public cellClickHandler({
     isEdited,
@@ -257,31 +244,131 @@ export class LeadheaderComponent implements OnInit {
       this.grid.editRow(rowIndex, this.formGroup);
     }
   }
+  
+  public cellCloseHandler(args: any): void {
+    const { formGroup, dataItem, column } = args;
+
+    if (!formGroup.valid) {
+      args.preventDefault();
+      return;
+    }
+
+    const fieldName = column.field;
+    let editedValue = formGroup.get(fieldName).value;
+
+    // Handle date formatting for assign_date field
+    if (fieldName === 'assign_date' && editedValue) {
+      // Convert date to YYYY-MM-DD format
+      if (editedValue instanceof Date) {
+        editedValue = editedValue.toISOString().split('T')[0];
+      }
+    }
+
+    dataItem[fieldName] = editedValue;
+
+    // Update the backend with the edited data
+    this.databaseService.updateLead(dataItem.id, dataItem).subscribe({
+      next: () => {
+        this.loadEmployees(); // Refresh grid after update
+      },
+      error: (error) => console.error('Error updating lead:', error),
+    });
+  }
+
+  public addHandler(): void {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split('T')[0];
+    
+    const newLead = {
+      record_id: `${Date.now()}`,
+      last_name: '',
+      first_name: '',
+      email: '',
+      phone: '',
+      lmp_lead_id: Math.floor(Math.random() * 1000) + 1,
+      appointment_type: '',
+      booking_agency: 0,  // Initialize with 0
+      lead_stage: 'New',
+      created_source: 'Web',
+      assign_date: formattedDate,
+      action: 'New Lead'
+    };
+
+    // Create form group for new lead with date object for UI
+    this.formGroup = this.createFormGroup({...newLead, assign_date: currentDate});
+    this.isNew = true;
+
+    // Create the new lead on the server first
+    this.databaseService.createLead(newLead).subscribe({
+      next: (response) => {
+        console.log('New lead created:', response);
+        // Update the form with the server-generated ID
+        this.formGroup?.patchValue({ id: response.id });
+        // Add the new row to the grid and put it in edit mode
+        this.grid.addRow(this.formGroup);
+        this.editedRowIndex = 0;
+        // Refresh the grid to show the new row
+        this.loadEmployees();
+      },
+      error: (error) => {
+        console.error('Error creating lead:', error);
+        alert('Failed to create new lead. Please try again.');
+      }
+    });
+  }
 
   saveCurrent() {
     if (this.formGroup && this.formGroup.valid) {
       const leadData = this.formGroup.value;
       console.log('leadData', leadData);
+      
+      // Format the assign_date properly
+      if (leadData.assign_date) {
+        leadData.assign_date = leadData.assign_date instanceof Date ? 
+          leadData.assign_date.toISOString().split('T')[0] : 
+          new Date(leadData.assign_date).toISOString().split('T')[0];
+      }
+
       if (this.isNew) {
-        this.databaseService.createLead(leadData).subscribe({
+        // When creating a new lead, make sure required fields are set
+        const newLead = {
+          ...leadData,
+          action: leadData.action || `Lead ${leadData.first_name || 'New'}`,
+          lead_stage: leadData.lead_stage || 'New',
+          created_source: leadData.created_source || 'Web',
+          record_id: leadData.record_id || `${Date.now()}`,
+          lmp_lead_id: leadData.lmp_lead_id || Math.floor(Math.random() * 1000) + 1
+        };
+
+        this.databaseService.createLead(newLead).subscribe({
           next: (response) => {
+            console.log('New lead created:', response);
             this.loadEmployees(); // Refresh grid
             this.closeEditor();
+            this.isNew = false;
           },
-          error: (error) => console.error('Error creating lead:', error)
+          error: (error) => {
+            console.error('Error creating lead:', error);
+            alert('Failed to create lead. Please try again.');
+          }
         });
       } else {
         const id = leadData.id;
         this.databaseService.updateLead(id, leadData).subscribe({
           next: (response) => {
+            console.log('Lead updated:', response);
             this.loadEmployees(); // Refresh grid
             this.closeEditor();
           },
-          error: (error) => console.error('Error updating lead:', error)
+          error: (error) => {
+            console.error('Error updating lead:', error);
+            alert('Failed to update lead. Please try again.');
+          }
         });
       }
     }
   }
+  
   public saveRow(): void {
     if (this.formGroup && this.formGroup.valid) {
       console.log('formGroup', this.formGroup.value);
@@ -311,74 +398,11 @@ export class LeadheaderComponent implements OnInit {
       lmp_lead_id: [dataItem.lmp_lead_id, Validators.required],
       appointment_type: [dataItem.appointment_type, Validators.required],
       booking_agency: [dataItem.booking_agency, Validators.required],
-      lead_stage: [dataItem.lead_stage, Validators.required],// Make sure to bind this field
-      created_source: [dataItem.created_source, Validators.required],// ✅ Added this line
-      assign_date: [dataItem.assign_date || null, Validators.required], // ✅ New date field
+      lead_stage: [dataItem.lead_stage, Validators.required],
+      created_source: [dataItem.created_source, Validators.required],
+      assign_date: [dataItem.assign_date, Validators.required],
     });
   }
-
-
-  public addHandler(): void {
-    this.formGroup = this.createFormGroup({
-      record_id: '',
-      last_name: '',
-      first_name: '',
-      email: '',
-      phone: '',
-      lmp_lead_id: '',
-      appointment_type: '',
-      booking_agency: '',
-      lead_stage: '',
-      created_source: '',
-    });
-    this.isNew = true;
-    this.grid.addRow(this.formGroup);
-  }
-
-  public cellCloseHandler(args: any): void {
-    const { formGroup, dataItem, column } = args;
-
-    if (!formGroup.valid) {
-      args.preventDefault();
-      return;
-    }
-
-    const fieldName = column.field;
-    const editedValue = formGroup.get(fieldName).value;
-    dataItem[fieldName] = editedValue;
-
-    // Update the backend with the edited data (in your case, 'lead_stage')
-    this.databaseService.updateLead(dataItem.id, dataItem).subscribe({
-      next: () => {
-        this.loadEmployees(); // Refresh grid after update
-      },
-      error: (error) => console.error('Error updating lead:', error),
-    });
-  }
-
-
-  public clearFilter(): void {
-    // Reset the grid view to original data
-    this.gridView = [...this.gridData];
-
-    // Clear the search input if it exists
-    const searchInput = document.querySelector('.search-box') as HTMLInputElement;
-    if (searchInput) {
-      searchInput.value = '';
-    }
-
-    // Reset dropdowns to default
-    const dropdowns = document.querySelectorAll('kendo-dropdownlist');
-    dropdowns.forEach(dropdown => {
-      if (dropdown) {
-        (dropdown as any).value = undefined;
-      }
-    });
-
-    //Refresh the grid
-    this.grid.data = [...this.gridData];
-  }
-
 
   private loadSavedGridState(): void {
     const savedState = this.statePersistingService.get('gridSettings');
@@ -387,34 +411,53 @@ export class LeadheaderComponent implements OnInit {
     }
   }
 
-  // public savePreferences(): void {
-  //   if (!this.grid) return;
 
-  //   const columns = this.grid.columns;
-  //   const gridConfig = {
-  //     state: {
-  //       skip: this.grid.skip || 0,
-  //       take: this.grid.pageSize || 20,
-  //       sort: this.grid.sort || [],
-  //       filter: this.grid.filter || null,
-  //       group: this.grid.group || []
-  //     },
-  //     gridData: this.gridData,
-  //     columnsConfig: columns.toArray().map((item: any) => ({
-  //       field: item.field,
-  //       width: item.width,
-  //       title: item.title,
-  //       filter: item.filter,
-  //       format: item.format,
-  //       filterable: item.filterable,
-  //       orderIndex: item.orderIndex,
-  //       hidden: item.hidden
-  //     }))
-  //   };
+  public saveNewPreference(name?: string): void {
+    if (!this.grid) return;
 
-  //   this.statePersistingService.set('gridSettings', gridConfig);
-  // }
+    const newId = Date.now().toString();
+    const gridConfig = {
+      state: {
+        skip: this.grid.skip || 0,
+        take: this.grid.pageSize || 20,
+        sort: this.grid.sort || [],
+        filter: this.grid.filter || {
+          logic: 'and',
+          filters: []
+        },
+        group: this.grid.group || []
+      },
+      gridData: this.gridData,
+      columnsConfig: this.grid.columns.toArray().map(item => ({
+        field: (item as any).field,
+        title: (item as any).title,
+        width: (item as any).width,
+        filter: (item as any).filter,
+        format: (item as any).format,
+        filterable: (item as any).filterable,
+        orderIndex: (item as any).orderIndex,
+        hidden: (item as any).hidden
+      }))
+    };
 
+    // If name is not provided, prompt the user
+    if (!name) {
+      const promptResult = prompt('Enter a name for your preference:');
+      if (!promptResult) return; // User cancelled
+      name = promptResult;
+    }
+
+    // Save the new preference configuration
+    this.statePersistingService.set(`gridSettings_${newId}`, gridConfig);
+
+    // Update preferences list
+    const currentPreferences = this.savedPreferences.filter(p => p.id !== 'new');
+    const updatedPreferences = [...currentPreferences, { id: newId, name }];
+    this.statePersistingService.set('savedPreferences', updatedPreferences);
+
+    // Reload preferences
+    this.loadSavedPreferences();
+  }
 
   public dataStateChange(state: State): void {
     if (this.grid) {
@@ -432,6 +475,8 @@ export class LeadheaderComponent implements OnInit {
 
       // Process data with new state
       const processedData = process(this.gridData, state);
+      console.log('Grid state change:',this.gridSettings.state);
+console.log('processedData',processedData);
       this.gridView = processedData.data;
 
       // Save current grid configuration
@@ -448,6 +493,26 @@ export class LeadheaderComponent implements OnInit {
       };
 
       this.statePersistingService.set('gridSettings', gridConfig);
+    }
+  }
+
+  
+  private loadSavedPreferences(): void {
+    const preferences = this.statePersistingService.get('savedPreferences') || [];
+    this.savedPreferences = preferences;
+  }
+
+  public onPreferenceChange(preference: any): void {
+    if (!preference) return;
+
+    if (preference.id === 'new') {
+      this.saveNewPreference();
+    } else {
+      const savedPreference = this.statePersistingService.get(`gridSettings_${preference.id}`);
+      if (savedPreference) {
+        this.gridSettings = this.mapGridSettings(savedPreference);
+        this.applyGridSettings();
+      }
     }
   }
 
@@ -483,6 +548,7 @@ export class LeadheaderComponent implements OnInit {
           col.title = config.title;
           col.filterable = config.filterable;
           col.hidden = config.hidden;
+          (col as any).orderIndex = config.orderIndex;
         }
       });
     }
@@ -499,14 +565,24 @@ export class LeadheaderComponent implements OnInit {
   public onLeadStageChange(dataItem: any): void {
     if (!dataItem.id) return;
 
+    // Create a partial update with just the lead_stage field
+    const update = {
+      lead_stage: dataItem.lead_stage
+    };
+
     // Call backend to save the lead stage change
-    this.databaseService.updateLead(dataItem.id, dataItem).subscribe({
+    this.databaseService.updateLead(dataItem.id, update).subscribe({
       next: () => {
         console.log('Lead stage updated successfully');
-        this.loadEmployees(); // Refresh grid after update
+        // Refresh the grid to ensure we have the latest data
+        this.loadEmployees();
       },
       error: (error) => {
         console.error('Error updating lead stage:', error);
+        // Optionally show an error message to the user
+        alert('Failed to update lead stage. Please try again.');
+        // Refresh the grid to ensure we're in sync with the server
+        this.loadEmployees();
       },
     });
   }
@@ -528,6 +604,48 @@ export class LeadheaderComponent implements OnInit {
     }
   }
 
+  public deletePreference(preferenceId: string, event: Event): void {
+    event.stopPropagation(); // Prevent dropdown from opening/closing
+    
+    if (preferenceId === '0') return; // Don't allow deleting the default preference
+    
+    if (confirm('Are you sure you want to delete this preference?')) {
+      // Remove the preference configuration
+      this.statePersistingService.set(`gridSettings_${preferenceId}`, null);
+      
+      // Update preferences list
+      const updatedPreferences = this.savedPreferences.filter(p => p.id !== preferenceId);
+      this.statePersistingService.set('savedPreferences', updatedPreferences);
+      
+      // Reset dropdown to default if the current preference is being deleted
+      if (this.preferences?.value?.id === preferenceId) {
+        this.preferences.value = this.defaultPreference;
+      }
+      
+      // Reload preferences
+      this.loadSavedPreferences();
+    }
+  }
 
+  public onAssignDateChange(dataItem: any): void {
+    if (!dataItem.id) return;
+
+    // Format date for JSON server
+    const formattedDate = dataItem.assign_date instanceof Date ? 
+      dataItem.assign_date.toISOString().split('T')[0] : 
+      new Date(dataItem.assign_date).toISOString().split('T')[0];
+
+    // Update only the assign_date field
+    this.databaseService.updateLead(dataItem.id, { assign_date: formattedDate }).subscribe({
+      next: () => {
+        console.log('Assign date updated successfully');
+        this.loadEmployees(); // Refresh grid to ensure we have the latest data
+      },
+      error: (error) => {
+        console.error('Error updating assign date:', error);
+        this.loadEmployees(); // Refresh grid to ensure we're in sync with the server
+      }
+    });
+  }
 
 }

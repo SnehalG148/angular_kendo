@@ -14,10 +14,10 @@
       <i class="fas fa-download"></i> Export to Excel
     </button>
 
-    <button kendoButton class="btn create-btn">
+    <button kendoButton class="btn create-btn" (click)="addHandler()">
       Create
     </button>
-
+   
 
   </div>
 </div>
@@ -28,16 +28,34 @@
       <kendo-dropdownlist #items [data]="listItems" [defaultItem]="'All Leads'"></kendo-dropdownlist>
     </div>
     <div class="k-form-field-wrap">
-      <kendo-dropdownlist #preferences [data]="savedPreferences" [textField]="'name'" [valueField]="'id'"
-        [defaultItem]="defaultPreference" (valueChange)="onPreferenceChange($event)">
+      <kendo-dropdownlist 
+        #preferences
+        [data]="savedPreferences"
+        [textField]="'name'"
+        [valueField]="'id'"
+        [defaultItem]="defaultPreference"
+        (valueChange)="onPreferenceChange($event)">
+        <ng-template kendoDropDownListItemTemplate let-dataItem>
+          <div class="preferences-item">
+            <span>{{ dataItem.name }}</span>
+            <i *ngIf="dataItem.id !== '0'" 
+               class="fas fa-trash-alt delete-icon" 
+               (click)="deletePreference(dataItem.id, $event)">
+            </i>
+          </div>
+        </ng-template>
       </kendo-dropdownlist>
     </div>
-    <kendo-textbox #searchInput class="search-box" placeholder="Type Search Keyword" (valueChange)="onFilterr($event)"
-      style="height: 40px;">
-    </kendo-textbox>
-    <button class="search-btn" type="button" (click)="onFilterr(searchInput.value)">
-      <i class="fas fa-search"></i>
-    </button>
+    <kendo-textbox 
+    #searchInput
+    class="search-box" 
+    placeholder="Type Search Keyword" 
+    (valueChange)="onFilterr($event)"
+    style="height: 40px;">
+</kendo-textbox>
+<button class="search-btn" type="button" (click)="onFilterr(searchInput.value)">
+    <i class="fas fa-search"></i>
+</button>
 
     <!-- Wrap right side controls -->
     <div class="right-side-controls">
@@ -62,34 +80,71 @@
   </div>
   <br>
 
-  <kendo-grid #gridref [kendoGridBinding]="gridView" kendoGridSelectBy="id" [(selectedKeys)]="mySelection"
-    [editMode]="'incell'" [(editModel)]="editModel" (cellClose)="cellCloseHandler($event)"
-    [selectable]="{ mode: 'multiple', drag: true }" [pageSize]="20" [pageable]="true" [sortable]="true"
-    [groupable]="false" [reorderable]="true" [resizable]="true" [height]="500" [columnMenu]="{ filter: true }"
-    (cellClick)="cellClickHandler($event)" (add)="addHandler()" [pageSize]="gridSettings.state.take"
-    [skip]="gridSettings.state.skip" [sort]="gridSettings.state.sort" [filter]="gridSettings.state.filter"
-    [group]="gridSettings.state.group" (dataStateChange)="dataStateChange($event)">
+  <kendo-grid 
+    #gridref 
+    [kendoGridBinding]="gridView" 
+    kendoGridSelectBy="id" 
+    [(selectedKeys)]="mySelection"
+    
+    [editMode]="'incell'"
+    [(editModel)]="editModel"
+    (cellClose)="cellCloseHandler($event)"
+    (cellClick)="cellClickHandler($event)"
+    [navigable]="true"
 
-    <!-- <ng-template kendoGridToolbarTemplate>
-      <div>
-        <button kendoButton [disabled]="!formGroup?.valid" (click)="saveRow()">
-          Save
-        </button>
-        <button kendoButton themeColor="primary" (click)="cancelHandler()">
-          Cancel
-        </button>
-      </div>
-    </ng-template> -->
-
+    [selectable]="{ mode: 'multiple', drag: true }" 
+    [pageSize]="gridSettings.state.take" 
+    [pageable]="true" 
+    [sortable]="true"
+    [groupable]="false" 
+    [reorderable]="true" 
+    [resizable]="true" 
+    [height]="500" 
+    [columnMenu]="{ filter: true }"
+    [skip]="gridSettings.state.skip"
+    [sort]="gridSettings.state.sort"
+    [filter]="gridSettings.state.filter"
+    [group]="gridSettings.state.group"
+    (dataStateChange)="dataStateChange($event)"
+  
+    >
+    
     <kendo-grid-checkbox-column [width]="45" [headerClass]="{ 'text-center': true }" [class]="{ 'text-center': true }"
       [resizable]="false" [columnMenu]="false" [showSelectAll]="true"></kendo-grid-checkbox-column>
 
-    <kendo-grid-column field="action" title="Actions" [width]="220"
+    <kendo-grid-column field="action" title="Actions" [width]="110"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <kendo-dropdownbutton [data]="data" themeColor="success" class="custom-action-btn">
-          <i class="fas fa-cog me-1"></i>Actions<i class="fas fa-angle-down"></i>
-        </kendo-dropdownbutton>
+        <div class="dropdown-wrapper">
+          <button class="btn action-btn" [ngbPopover]="popContent" 
+                  [popoverClass]="'custom-popover'"
+                  container="body"
+                  placement="bottom-start"
+                  #p="ngbPopover">
+            <i class="fas fa-cog"></i> Actions <i class="fas fa-chevron-down"></i>
+          </button>
+          <ng-template #popContent>
+            <div class="action-menu-container">
+              <div class="action-column">
+                <a class="action-item"><i class="fas fa-angle-right"></i>View Lead</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Edit Lead</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Assign to Sales Rep</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Schedule Appointment</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Possible Matches</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Tie and Untie Qualified Leads</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Audit Trail</a>
+              </div>
+              <div class="action-column">
+                <a class="action-item"><i class="fas fa-angle-right"></i>Estimates</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Lead Documents</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Register With STS</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Survey List</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Duplicate Lead</a>
+                <a class="action-item"><i class="fas fa-angle-right"></i>Chat</a>
+              </div>
+            </div>
+          </ng-template>
+        </div>
       </ng-template>
     </kendo-grid-column>
 
@@ -97,23 +152,22 @@
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
-    <kendo-grid-column field="last_name" title="Last Name" [width]="100" [class]="{ 'text-center': true }"
-      [editable]="true" [resizable]="false"
+    <kendo-grid-column field="last_name" title="Last Name" [width]="100" [class]="{ 'text-center': true }" [editable]="true"
+      [resizable]="false"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
-    <kendo-grid-column field="first_name" title="First Name" [width]="100" [class]="{ 'text-center': true }"
-      [editable]="true" [resizable]="false" filter="numeric"
+    <kendo-grid-column field="first_name" title="First Name" [width]="100" [class]="{ 'text-center': true }" [editable]="true"
+      [resizable]="false" filter="numeric"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
-    <kendo-grid-column field="email" title="Primary Email Address" [width]="200" [class]="{ 'text-center': true }"
-      [editable]="true" [resizable]="false" filter="boolean"
+    <kendo-grid-column field="email" title="Primary Email Address" [width]="200" [class]="{ 'text-center': true }" [editable]="true"
+      [resizable]="false" filter="boolean"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
-    <kendo-grid-column field="phone" title="Primary Phone Type" [width]="210" [resizable]="false" filter="numeric"
-      [editable]="true"
+    <kendo-grid-column field="phone" title="Primary Phone Type" [width]="210" [resizable]="false" filter="numeric" [editable]="true"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
@@ -122,23 +176,24 @@
     </kendo-grid-column>
 
     <kendo-grid-column field="appointment_type" title="Appointment Type" [width]="150" [editable]="true"
-      [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
+      [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">  
     </kendo-grid-column>
 
     <kendo-grid-column field="booking_agency" title="Booking Agency" [width]="160" [editable]="true"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
     </kendo-grid-column>
 
-    <kendo-grid-column field="lead_stage" title="Lead Stage" [width]="150" [editable]="true" [headerStyle]="{
+    <kendo-grid-column field="lead_stage" title="Lead Stage" [width]="150" [editable]="true"
+  [headerStyle]="{
     'background-color': '#00205b',
     'color': 'white',
     'text-align': 'center',
     'font-weight': 'bold'
   }">
 
-      <!-- Display Mode -->
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <span [ngStyle]="{
+  <!-- Display Mode -->
+  <ng-template kendoGridCellTemplate let-dataItem>
+    <span [ngStyle]="{
       'background-color': getLeadStageColor(dataItem.lead_stage),
       'color': dataItem.lead_stage ? 'white' : '',
       'display': 'inline-block',
@@ -146,36 +201,86 @@
       'border-radius': '4px',
       'width': '100%'
     }">
-          {{ dataItem.lead_stage || 'Select' }}
-        </span>
-      </ng-template>
+      {{ dataItem.lead_stage || 'Select' }}
+    </span>
+  </ng-template>
 
-      <!-- Edit Mode -->
-      <ng-template kendoGridEditTemplate let-dataItem="dataItem">
-        <kendo-dropdownlist [data]="['Select', 'New', 'Contacted', 'Qualified', 'Converted', 'Lost']"
-          [(ngModel)]="dataItem.lead_stage" [valuePrimitive]="true" [ngStyle]="{
+  <!-- Edit Mode -->
+  <ng-template kendoGridEditTemplate let-dataItem="dataItem">
+    <kendo-dropdownlist
+      [data]="['Select', 'New', 'Contacted', 'Qualified', 'Converted', 'Lost']"
+      [(ngModel)]="dataItem.lead_stage"
+      [valuePrimitive]="true"
+      (valueChange)="onLeadStageChange(dataItem)"
+      [ngStyle]="{
         'background-color': getLeadStageColor(dataItem.lead_stage),
         'color': dataItem.lead_stage ? 'white' : ''
-      }" style="width: 100%;">
-        </kendo-dropdownlist>
-      </ng-template>
-    </kendo-grid-column>
+      }"
+      style="width: 100%;">
+    </kendo-dropdownlist>
+  </ng-template>
+</kendo-grid-column>
 
-    <kendo-grid-column field="created_source" title="Created Source" [width]="200" filter="boolean" [editable]="true"
+<kendo-grid-column field="created_source" title="Created Source" [width]="200" [editable]="true"
       [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
-      <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
-        <kendo-grid-multi-check-filter [column]="column" [data]="['Mobile', 'Web']">
-        </kendo-grid-multi-check-filter>
+      <ng-template kendoGridFilterMenuTemplate let-filter>
+        <div class="p-4 w-64 border rounded shadow custom-filter-container">
+          <label class="block mb-2 font-medium">Type Search Keyword</label>
+          <input type="text" [(ngModel)]="searchText" class="k-textbox w-full mb-3 filter-search-input" placeholder="Type Search Keyword" />
+
+          <div class="filter-checkbox-group">
+            <div class="filter-checkbox-item">
+              <input type="checkbox" id="mobile" [(ngModel)]="filters.mobile" />
+              <label for="mobile">Mobile</label>
+            </div>
+            <div class="filter-checkbox-item">
+              <input type="checkbox" id="web" [(ngModel)]="filters.web" />
+              <label for="web">Web</label>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button class="filter-button filter-apply-button" (click)="applyFilter(filter)">
+              Filter
+            </button>
+            <button class="filter-button filter-clear-button" (click)="clearFilter(filter)">
+              Clear
+            </button>
+          </div>
+        </div>
       </ng-template>
     </kendo-grid-column>
 
-    <kendo-grid-column field="assign_date" title="Assign Date" [width]="200" editor="date" filter="date"
-      format="{0:dd-MM-yyyy}"  [headerStyle]="{ 'background-color': '#00205b', 'color': 'white', 'text-align': 'center', 'font-weight': 'bold' }">
-    </kendo-grid-column>
+<kendo-grid-column
+  field="assign_date"
+  title="Assign Date"
+  [width]="200"
+  filter="date"
+  [editable]="true"
+  [headerStyle]="{
+    'background-color': '#00205b',
+    'color': 'white',
+    'text-align': 'center',
+    'font-weight': 'bold'
+  }"
+>
+  <!-- Display Mode -->
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{ dataItem.assign_date | date:'yyyy-MM-dd' }}
+  </ng-template>
 
+  <!-- Edit Mode -->
+  <ng-template kendoGridEditTemplate let-dataItem="dataItem">
+    <kendo-datepicker
+      [(ngModel)]="dataItem.assign_date"
+      [format]="'yyyy-MM-dd'"
+      (valueChange)="onAssignDateChange(dataItem)"
+      [value]="dataItem.assign_date"
+      style="width: 100%">
+    </kendo-datepicker>
+  </ng-template>
+</kendo-grid-column>
 
-
-
-    <kendo-grid-excel fileName="Leads.xlsx"></kendo-grid-excel>
+<kendo-grid-excel fileName="Leads.xlsx"></kendo-grid-excel>
   </kendo-grid>
 </div>
